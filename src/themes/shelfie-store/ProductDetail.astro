@@ -88,6 +88,23 @@ const { model, purchase } = Astro.props;
 
     <ProductPurchaseForm model={purchase} />
 
+    <div class="mt-8 rounded-xl border border-line bg-surface p-4 text-xs text-muted shadow-xs">
+      <h3 class="flex items-center gap-1.5 font-bold uppercase tracking-wider text-ink">
+        <span>✨</span> The Shelfie Promise
+      </h3>
+      <ul class="mt-2.5 space-y-1.5">
+        <li class="flex items-start gap-2">
+          <span class="font-bold text-brand">✓</span> <span><strong>Free 3D Proof:</strong> Review 3D turnaround views before we print.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-bold text-brand">✓</span> <span><strong>Free Revisions:</strong> Adjust colors, expressions, or markings at no extra charge.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="font-bold text-brand">✓</span> <span><strong>Hand Finished:</strong> Multi-material color printing with protective UV finish.</span>
+        </li>
+      </ul>
+    </div>
+
     {/* Share — hidden until JS confirms the browser can share or copy. Uses the
         Web Share API (mobile/native sheet) with a clipboard-copy fallback. */}
     <button

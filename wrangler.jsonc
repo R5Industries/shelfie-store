@@ -87,6 +87,12 @@
 			"bucket_name": "minshop-files"
 		}
 	],
+	"services": [
+		{
+			"binding": "INTAKE_API",
+			"service": "shelfie-api"
+		}
+	],
 	// Optional integrations — uncomment + redeploy to enable (see README → Search,
 	// Settings). Each is just a binding; the code checks for it and falls back.
 	//   "images": { "binding": "IMAGES" },

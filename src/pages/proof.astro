@@ -1,0 +1,281 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = false;
+
+const title = "Review Your 3D Proof";
+const description = "Inspect your custom figurine 3D turnaround views before we print.";
+---
+
+<Layout title={title} description={description}>
+  <div class="mx-auto max-w-4xl px-6 py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <span class="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand">
+        Likeness Review
+      </span>
+      <h1 class="mt-3 font-serif text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+        Review Your Custom Figurine Proof
+      </h1>
+      <p class="mt-2 text-sm text-muted">
+        Every Shelfie keepsake is digitally previewed before printing. Inspect every angle, request tweaks for free, or approve to start crafting.
+      </p>
+    </div>
+
+    <!-- Token Entry Form (Shown if no query parameters or looking up manually) -->
+    <div id="lookup-panel" class="rounded-2xl border border-line bg-surface p-6 shadow-xs">
+      <h2 class="text-base font-semibold text-ink">Find Your Proof</h2>
+      <p class="mt-1 text-xs text-muted">
+        Enter the Proof ID and security token from your confirmation email.
+      </p>
+
+      <form id="lookup-form" class="mt-4 flex flex-col gap-3 sm:flex-row">
+        <input
+          type="text"
+          id="proof-id-input"
+          placeholder="Proof ID (e.g. req_...)"
+          required
+          class="flex-1 rounded-lg border border-line bg-paper/50 px-3.5 py-2.5 text-sm text-ink outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+        />
+        <input
+          type="text"
+          id="proof-token-input"
+          placeholder="Security Token"
+          required
+          class="flex-1 rounded-lg border border-line bg-paper/50 px-3.5 py-2.5 text-sm text-ink outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+        />
+        <button
+          type="submit"
+          class="rounded-lg bg-brand px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-on-brand transition hover:bg-brand-hover"
+        >
+          Load Proof
+        </button>
+      </form>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="mt-8 hidden text-center py-12">
+      <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+      <p class="mt-3 text-sm font-medium text-muted">Fetching your 3D proof from the workshop…</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="mt-8 hidden rounded-xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-800">
+      <p id="error-message">Unable to load proof.</p>
+    </div>
+
+    <!-- Active Proof Display Panel -->
+    <div id="proof-container" class="mt-8 hidden space-y-8">
+      <!-- Status Card -->
+      <div class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-line bg-surface p-5 shadow-xs">
+        <div>
+          <span class="text-xs uppercase tracking-widest text-faint">Status</span>
+          <div id="status-badge" class="mt-1 text-base font-bold text-ink">Loading…</div>
+        </div>
+        <div id="proof-summary" class="text-xs text-muted"></div>
+      </div>
+
+      <!-- Turnaround Views Gallery -->
+      <div class="rounded-2xl border border-line bg-surface p-6 shadow-xs">
+        <h2 class="font-serif text-xl font-bold tracking-tight text-ink">Turnaround Views</h2>
+        <p class="mt-1 text-xs text-muted">Front, back, left, and right preview renderings.</p>
+        <div id="views-gallery" class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4"></div>
+      </div>
+
+      <!-- 3D Model Assets & Downloads -->
+      <div id="model-assets-card" class="hidden rounded-2xl border border-line bg-surface p-6 shadow-xs">
+        <h2 class="font-serif text-xl font-bold tracking-tight text-ink">3D Print Assets</h2>
+        <p class="mt-1 text-xs text-muted">High-precision mesh generated for full-color multi-material 3D printing.</p>
+        <div id="assets-list" class="mt-4 flex flex-wrap gap-3"></div>
+      </div>
+
+      <!-- Buyer Decision Actions -->
+      <div id="actions-panel" class="rounded-2xl border border-line bg-surface p-6 shadow-xs">
+        <h2 class="font-serif text-xl font-bold tracking-tight text-ink">Your Decision</h2>
+        <p class="mt-1 text-xs text-muted">
+          Approve this likeness to proceed straight to printing, or request adjustments.
+        </p>
+
+        <div class="mt-6 flex flex-col gap-4 sm:flex-row">
+          <button
+            type="button"
+            id="approve-btn"
+            class="flex-1 rounded-xl bg-brand px-6 py-3.5 text-center text-xs font-bold uppercase tracking-widest text-on-brand shadow-sm transition hover:bg-brand-hover"
+          >
+            ✓ Approve Proof &amp; Craft Figurine
+          </button>
+        </div>
+
+        <div class="mt-6 border-t border-line pt-6">
+          <label for="revision-notes" class="block text-xs font-bold uppercase tracking-wider text-ink">
+            Request Revisions (Free)
+          </label>
+          <textarea
+            id="revision-notes"
+            rows="3"
+            placeholder="Describe any adjustments (e.g. hair color slightly lighter, tweak hat angle, markings on pet's left ear)..."
+            class="mt-2 w-full rounded-xl border border-line bg-paper/50 p-3 text-sm text-ink outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+          ></textarea>
+          <button
+            type="button"
+            id="revise-btn"
+            class="mt-3 rounded-lg border border-line bg-surface px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink hover:bg-paper"
+          >
+            Submit Revision Request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  function getParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+      id: params.get('id') || params.get('proofId') || '',
+      token: params.get('token') || ''
+    };
+  }
+
+  async function loadProof(id: string, token: string) {
+    const loading = document.getElementById('loading-state');
+    const errorBox = document.getElementById('error-state');
+    const container = document.getElementById('proof-container');
+    const errorMsg = document.getElementById('error-message');
+
+    if (!id || !token) return;
+
+    loading?.classList.remove('hidden');
+    errorBox?.classList.add('hidden');
+    container?.classList.add('hidden');
+
+    try {
+      const res = await fetch(`/api/v1/shelfie/proofs/${encodeURIComponent(id)}?token=${encodeURIComponent(token)}`);
+      if (!res.ok) {
+        const err = (await res.json().catch(() => ({ error: 'Proof not found or link expired.' }))) as { error?: string };
+        throw new Error(err.error || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      renderProof(data, id, token);
+    } catch (err: any) {
+      if (errorMsg) errorMsg.textContent = err.message || 'Unable to retrieve proof.';
+      errorBox?.classList.remove('hidden');
+    } finally {
+      loading?.classList.add('hidden');
+    }
+  }
+
+  function renderProof(data: any, id: string, token: string) {
+    const container = document.getElementById('proof-container');
+    const statusBadge = document.getElementById('status-badge');
+    const gallery = document.getElementById('views-gallery');
+    const assetsCard = document.getElementById('model-assets-card');
+    const assetsList = document.getElementById('assets-list');
+
+    if (!container || !statusBadge) return;
+
+    statusBadge.textContent = (data.status || 'Active').toUpperCase();
+
+    // Render turnaround images
+    if (gallery && data.views && data.views.length > 0) {
+      gallery.innerHTML = data.views.map((v: any) => `
+        <div class="overflow-hidden rounded-xl border border-line bg-paper">
+          <img src="${v.url || `/api/v1/shelfie/proofs/${encodeURIComponent(id)}/assets/${encodeURIComponent(v.assetName)}?token=${encodeURIComponent(token)}`}" alt="${v.angle || 'View'}" class="aspect-square w-full object-cover" />
+          <div class="p-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted">${v.angle || 'Angle'}</div>
+        </div>
+      `).join('');
+    } else if (gallery) {
+      gallery.innerHTML = '<p class="col-span-full text-xs text-muted">Generating turnaround sheets…</p>';
+    }
+
+    // Render 3D assets
+    if (assetsCard && assetsList && data.assets && data.assets.length > 0) {
+      assetsCard.classList.remove('hidden');
+      assetsList.innerHTML = data.assets.map((a: any) => `
+        <a href="/api/v1/shelfie/proofs/${encodeURIComponent(id)}/assets/${encodeURIComponent(a.name)}?token=${encodeURIComponent(token)}" download class="inline-flex items-center gap-1.5 rounded-lg border border-line bg-paper px-3 py-1.5 text-xs font-medium text-ink hover:border-brand">
+          <span>📦</span> ${a.name}
+        </a>
+      `).join('');
+    }
+
+    container.classList.remove('hidden');
+    setupActions(id, token);
+  }
+
+  function setupActions(id: string, token: string) {
+    const approveBtn = document.getElementById('approve-btn');
+    const reviseBtn = document.getElementById('revise-btn');
+    const notesInput = document.getElementById('revision-notes') as HTMLTextAreaElement | null;
+
+    approveBtn?.addEventListener('click', async () => {
+      approveBtn.setAttribute('disabled', 'true');
+      approveBtn.textContent = 'Submitting Approval…';
+      try {
+        const res = await fetch(`/api/v1/shelfie/proofs/${encodeURIComponent(id)}/decision?token=${encodeURIComponent(token)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision: 'approve' }),
+        });
+        if (res.ok) {
+          alert('Proof approved! Your custom figurine has been queued for 3D printing.');
+          window.location.reload();
+        } else {
+          alert('Approval failed. Please try again.');
+          approveBtn.removeAttribute('disabled');
+        }
+      } catch {
+        alert('Network error submitting approval.');
+        approveBtn.removeAttribute('disabled');
+      }
+    });
+
+    reviseBtn?.addEventListener('click', async () => {
+      const notes = notesInput?.value?.trim() || '';
+      if (!notes) {
+        alert('Please describe the adjustments you would like before requesting a revision.');
+        return;
+      }
+      reviseBtn.setAttribute('disabled', 'true');
+      reviseBtn.textContent = 'Submitting Revision…';
+      try {
+        const res = await fetch(`/api/v1/shelfie/proofs/${encodeURIComponent(id)}/decision?token=${encodeURIComponent(token)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decision: 'revise', notes }),
+        });
+        if (res.ok) {
+          alert('Revision request received! We are updating your 3D proof.');
+          window.location.reload();
+        } else {
+          alert('Revision request failed. Please try again.');
+          reviseBtn.removeAttribute('disabled');
+        }
+      } catch {
+        alert('Network error submitting revision.');
+        reviseBtn.removeAttribute('disabled');
+      }
+    });
+  }
+
+  // Initial load
+  const initial = getParams();
+  if (initial.id && initial.token) {
+    loadProof(initial.id, initial.token);
+  }
+
+  // Lookup form handler
+  document.getElementById('lookup-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = (document.getElementById('proof-id-input') as HTMLInputElement)?.value.trim();
+    const token = (document.getElementById('proof-token-input') as HTMLInputElement)?.value.trim();
+    if (id && token) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('id', id);
+      url.searchParams.set('token', token);
+      window.history.pushState({}, '', url.toString());
+      loadProof(id, token);
+    }
+  });
+</script>

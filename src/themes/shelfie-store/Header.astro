@@ -26,7 +26,7 @@ const { model } = Astro.props;
     as the message wraps on narrow screens. Static means it's seen on load,
     scrolls away, and costs no vertical space on mobile. */}
 {
-  model.announcement && (
+  model.announcement ? (
     <div class="bg-brand text-on-brand">
       <div class="mx-auto max-w-6xl px-6 py-2 text-center text-xs tracking-wide">
         {model.announcement.href ? (
@@ -38,12 +38,18 @@ const { model } = Astro.props;
         )}
       </div>
     </div>
+  ) : (
+    <div class="bg-brand text-on-brand">
+      <div class="mx-auto max-w-6xl px-6 py-2 text-center text-xs font-medium tracking-wide">
+        ✨ Free 3D digital proof before crafting · Hand-finished keepsakes · 100% Likeness Guarantee
+      </div>
+    </div>
   )
 }
 
 <header class="sticky top-0 z-20 border-b border-line bg-paper/85 backdrop-blur">
-  <div class="mx-auto flex max-w-6xl items-center gap-6 px-6 py-5">
-    <a href="/" aria-label={model.storeName} class="font-serif text-2xl tracking-tight">
+  <div class="mx-auto flex max-w-6xl items-center gap-6 px-6 py-4">
+    <a href="/" aria-label={model.storeName} class="flex items-center gap-2 font-serif text-2xl tracking-tight text-ink transition hover:opacity-90">
       {
         model.logo ? (
           /* Not lazy: the header logo is above the fold on every page. The
@@ -51,7 +57,10 @@ const { model } = Astro.props;
              same to a screen reader or when the image fails. */
           <img src={model.logo.src} alt={model.logo.alt} class="h-8 max-w-48 object-contain sm:h-10" />
         ) : (
-          <span>{model.storeName}</span>
+          <span class="flex items-center gap-2.5">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm text-on-brand shadow-sm">🧸</span>
+            <span class="font-bold">{model.storeName || 'Shelfie'}</span>
+          </span>
         )
       }
     </a>
@@ -71,6 +80,7 @@ const { model } = Astro.props;
       class="ml-auto flex min-w-0 items-center gap-4 text-xs uppercase tracking-widest text-muted sm:gap-6"
     >
       <StoreNav links={model.headerLinks} />
+      <a href="/proof" class="hidden text-brand font-semibold hover:underline md:inline">Review Proof</a>
       {/* Search input is desktop-only; give mobile a link to the search page. */}
       <a href={model.search.action} class="hover:text-brand sm:hidden">Search</a>
       {model.cart.enabled && <StoreCartControl href={model.cart.href} />}

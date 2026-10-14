@@ -24,9 +24,30 @@ interface Props {
 const { model } = Astro.props;
 ---
 
-<div class="mb-10">
+<div class="mb-8">
   <p class="text-xs uppercase tracking-[0.25em] text-muted">{model.eyebrow}</p>
   <h1 class="mt-2 font-serif text-4xl tracking-tight sm:text-5xl">{model.heading}</h1>
+  <p class="mt-3 max-w-2xl text-base text-muted">
+    Turn your favorite portraits and beloved pets into tactile, shelf-worthy 3D miniatures. Every piece comes with a digital 3D proof before printing.
+  </p>
+</div>
+
+<div class="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+  <div class="rounded-xl border border-line bg-surface p-4 shadow-xs">
+    <div class="text-xl">📸</div>
+    <h3 class="mt-2 text-sm font-bold text-ink">1. Upload Photos</h3>
+    <p class="mt-1 text-xs text-muted">Snap photos from your phone. Clear lighting and natural poses work best.</p>
+  </div>
+  <div class="rounded-xl border border-line bg-surface p-4 shadow-xs">
+    <div class="text-xl">🎨</div>
+    <h3 class="mt-2 text-sm font-bold text-ink">2. Review 3D Proof</h3>
+    <p class="mt-1 text-xs text-muted">Inspect the full 3D model from all angles. Digital revisions are always free.</p>
+  </div>
+  <div class="rounded-xl border border-line bg-surface p-4 shadow-xs">
+    <div class="text-xl">🖨️</div>
+    <h3 class="mt-2 text-sm font-bold text-ink">3. Printed &amp; Hand-Finished</h3>
+    <p class="mt-1 text-xs text-muted">Full-color 3MF detail, protective UV-coating, and delivered to your doorstep.</p>
+  </div>
 </div>
 
 {

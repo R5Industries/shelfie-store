@@ -51,7 +51,7 @@ async function runScheduledSweeps(): Promise<void> {
 }
 
 export default {
-  fetch: handle,
+  fetch: handle as any,
 
   // Each sweep catches its own errors, so one failing job never strands the
   // others. waitUntil keeps the invocation alive for the whole pass.

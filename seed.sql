@@ -3,6 +3,30 @@
 --   wrangler d1 execute minshop-db --local --file=./seed.sql   (or: npm run db:seed)
 
 INSERT INTO products (name, slug, description, price_cents, stock)
+SELECT 'Custom Garden Gnome', 'garden-gnome', 'Whimsical garden gnome customized to your likeness and style. Includes free 3D digital proof, full-color printing, and protective weather-resistant UV coating.', 4900, 50
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE slug = 'garden-gnome');
+
+INSERT INTO products (name, slug, description, price_cents, stock)
+SELECT 'Print Your Pet Keepsake', 'print-your-pet', 'Joyful miniature replica of your beloved cat, dog, or companion animal sculpted from your photos. Includes 3D digital proof and commemorative pedestal.', 5900, 50
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE slug = 'print-your-pet');
+
+INSERT INTO products (name, slug, description, price_cents, stock)
+SELECT 'Custom Keepsake Figurine', 'keepsake-figurine', 'Artisanal custom portrait figurine for partners, families, or celebrations. Includes custom plaque inscription, display plinth, and full-color 3MF detail.', 6900, 50
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE slug = 'keepsake-figurine');
+
+INSERT INTO categories (name, slug)
+SELECT 'Custom Keepsakes', 'keepsakes'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE slug = 'keepsakes');
+
+INSERT INTO categories (name, slug)
+SELECT 'Pet Figurines', 'pets'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE slug = 'pets');
+
+INSERT INTO categories (name, slug)
+SELECT 'Garden Gnomes', 'gnomes'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE slug = 'gnomes');
+
+INSERT INTO products (name, slug, description, price_cents, stock)
 SELECT 'Sample Tee', 'sample-tee', 'A comfy cotton t-shirt.', 2500, 100
 WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Sample Tee');
 
